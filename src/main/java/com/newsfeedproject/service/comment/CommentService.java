@@ -1,7 +1,7 @@
 package com.newsfeedproject.service.comment;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,9 @@ import com.newsfeedproject.repository.user.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
@@ -35,26 +37,56 @@ public class CommentService {
 	@Transactional
 	public CreateCommentResponseDto createComment(Long postId, CreateCommentRequestDto createRequestDto) {
 
+		log.info("서비스 들어옴");
+
 		// 피드(게시물)와 작성자 정보 조회
 		Post post = postRepository.findPostById(postId)
 			.orElseThrow(() -> new PostNotFoundException()); // 예외처리 추가
+		log.info(post.toString());
+
 		User user = userRepository.findById(createRequestDto.getUserId())
 			.orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
+		log.info(user.toString());
 
-		// 부모 아이디의 존재여부 검증 로직
-		if (createRequestDto.getParentCommentId() != null) {
-			boolean existsById = commentRepository.existsById(createRequestDto.getParentCommentId());
-			if (!existsById) {
+		Long parentId = createRequestDto.getParentCommentId();
+
+		// 부모 아이디의 존재여부 검증 로직 (대댓글안 경우)
+		if (parentId != null) {
+			log.info("부모아이디 존재함");
+			boolean existsById = commentRepository.existsById(parentId);
+			if (!existsById) { // 부모댓글
 				throw new CommentNotFoundException(); // 같은 코드 if(existById == false) -> 예외처리 추가
+			} else {
+				// 해당하는 부모 아이디를 조회 -> 오류가 생길 수 있음, 수정 필요
+				Comment parentComment = commentRepository.findById(createRequestDto.getParentCommentId())
+					.orElseThrow(() -> new CommentNotFoundException());
+				log.info(parentComment.toString());
+
+				// 댓글 엔티티 생성
+				Comment comment = new Comment(
+					createRequestDto.getContent(),
+					user,
+					post,
+					parentComment
+				);
+
+				// 데이터베이스에 댓글 저장
+				Comment savedComment = commentRepository.save(comment);
+
+				// 저장된 댓글 정보를 CreateCommentResponseDto로 변환하여 반환
+				return new CreateCommentResponseDto(
+					savedComment.getId(),
+					savedComment.getParent().getId(),
+					savedComment.getUser().getUserName(),
+					savedComment.getContent(),
+					savedComment.getCreatedAt());
 			}
 		}
 
-		// 댓글 엔티티 생성
-		Comment comment = new Comment(
-			createRequestDto.getContent(),
+		// 댓글인 경우
+		Comment comment = new Comment(createRequestDto.getContent(),
 			user,
-			post,
-			createRequestDto.getParentCommentId());
+			post);
 
 		// 데이터베이스에 댓글 저장
 		Comment savedComment = commentRepository.save(comment);
@@ -62,12 +94,18 @@ public class CommentService {
 		// 저장된 댓글 정보를 CreateCommentResponseDto로 변환하여 반환
 		return new CreateCommentResponseDto(
 			savedComment.getId(),
-			savedComment.getContent()
-		);
+			0L,
+			savedComment.getUser().getUserName(),
+			savedComment.getContent(),
+			savedComment.getCreatedAt());
 	}
 
 	public List<CreateCommentResponseDto> findAllComments(Long PostId) {
-		return new ArrayList<>();
+		return commentRepository.findAll().stream()
+			.map(comment -> new CreateCommentResponseDto(comment.getId(),
+				comment.getUser().getUserName(),
+				comment.getContent(), comment.getCreatedAt()))
+			.collect(Collectors.toList());
 	}
 
 	public UpdateCommentResponseDto updateComment(Long commentId, UpdateCommentRequestDto updateCommentRequestDto) {
@@ -81,6 +119,24 @@ public class CommentService {
 
 		commentRepository.delete(comment);
 
+	}
+
+	public List<CreateCommentResponseDto> findChildrenComments(Long parentCommentId) {
+		// 부모 댓글을 먼저 조회
+		Comment parentComment = commentRepository.findById(parentCommentId)
+			.orElseThrow(() -> new CommentNotFoundException());
+
+		// 부모 댓글에 달린 대댓글(답글) 조회
+		List<Comment> replies = commentRepository.findByParent(parentComment.getId());
+
+		// 대댓글 엔티티를 DTO로 변환하여 반환
+		return replies.stream()
+			.map(reply -> new CreateCommentResponseDto(
+				reply.getId(),
+				reply.getContent(),
+				reply.getCreatedAt()
+			))
+			.collect(Collectors.toList());
 	}
 
 }

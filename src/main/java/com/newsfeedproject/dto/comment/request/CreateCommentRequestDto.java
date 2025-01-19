@@ -7,12 +7,8 @@ import lombok.Getter;
 @Getter
 public class CreateCommentRequestDto {
 
-	private String userName;
-	private Long parentCommentId; // 부모댓글 생성 -> nullable
+	private Long userId;  // 로그인 한 유저 아이디 -> 더이상 dto에서 쓸모 없는 아이..
 	private String content;
-
-	public Long getUserId() {
-		return Long.valueOf(userName);
-	}
+	private Long parentCommentId = 0L; // 부모 아이디 존재 검증 로직을 위해 추가
 
 }
