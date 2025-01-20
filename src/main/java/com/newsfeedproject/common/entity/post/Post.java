@@ -1,6 +1,7 @@
 package com.newsfeedproject.common.entity.post;
 
 import com.newsfeedproject.common.entity.BaseEntity;
+import com.newsfeedproject.common.entity.category.PostCategory;
 import com.newsfeedproject.common.entity.user.User;
 
 import jakarta.persistence.*;
@@ -8,6 +9,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -29,6 +33,9 @@ public class Post extends BaseEntity {
 	@Setter
 	@Column(columnDefinition = "TINYINT")
 	private boolean isDelete = false;
+
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<PostCategory> postCategoryList = new ArrayList<>();
 
 	public Post(String content) {
 		this.content = content;
