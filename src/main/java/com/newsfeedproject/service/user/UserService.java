@@ -6,6 +6,13 @@ import java.util.stream.Collectors;
 
 import com.newsfeedproject.common.config.PasswordEncoder;
 import com.newsfeedproject.common.entity.user.User;
+import com.newsfeedproject.common.exception.BaseException;
+import com.newsfeedproject.common.exception.ResponseCode;
+import com.newsfeedproject.common.exception.post.DeletePostException;
+import com.newsfeedproject.common.exception.user.UserIdMissMatchException;
+import com.newsfeedproject.dto.user.request.UpdateUserRequestDto;
+import com.newsfeedproject.dto.user.response.FindUserByIdResponseDto;
+import com.newsfeedproject.dto.user.response.UpdateUserResponseDto;
 import com.newsfeedproject.common.exception.user.EmailAlreadyExistsUserException;
 import com.newsfeedproject.common.exception.user.EmailNotFoundUserException;
 import com.newsfeedproject.common.exception.user.PasswordMismatchUserException;
@@ -108,4 +115,35 @@ public class UserService {
 		// 변환된 DTO 리스트 반환
 		return userResponseDtoList;
 	}
+
+    // 회원 단건 조회
+	public FindUserByIdResponseDto findUserByIdService(Long userId) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(UserNotFoundUserException::new);
+
+		//탈퇴한 유저를 조회하면 던지는 예외
+		if (user.getIsDelete()) {
+			throw new UserNotFoundUserException();
+		}
+
+		return new FindUserByIdResponseDto(user);
+	}
+
+
+    // 회원 정보 수정(기능)
+	@Transactional
+    public UpdateUserResponseDto updateUserService(Long userId, UpdateUserRequestDto updateUserRequestDto) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(UserNotFoundUserException::new);
+
+		// 비밀번호 불일치 시 에외 처리
+		if (!passwordEncoder.matches(updateUserRequestDto.getPassword(), user.getPassword())) {
+			throw new PasswordMismatchUserException();
+		}
+
+		// 트렌젝셔널을 사용했기 때문에 영속화 되어 레포지토리에 자동으로 저장해준답니다.
+		user.updateUser(updateUserRequestDto.getUserName());
+
+		return new UpdateUserResponseDto();
+    }
 }
