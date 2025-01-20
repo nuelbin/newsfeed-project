@@ -1,4 +1,4 @@
-package com.newsfeedproject.dto.friend;
+package com.newsfeedproject.dto.friend.request;
 
 import com.newsfeedproject.common.entity.friend.FriendStatus;
 

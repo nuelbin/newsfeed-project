@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.newsfeedproject.dto.friend.FriendRequestDto;
-import com.newsfeedproject.dto.friend.FriendWithDateResponseDto;
-import com.newsfeedproject.dto.friend.FriendWithUpdateResponseDto;
+import com.newsfeedproject.dto.friend.request.FriendRequestDto;
+import com.newsfeedproject.dto.friend.response.FriendWithDateResponseDto;
+import com.newsfeedproject.dto.friend.response.FriendWithUpdateResponseDto;
 import com.newsfeedproject.service.friend.FriendService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,18 +36,18 @@ public class FriendController {
 		return friendService.createFriendService(requestDto, request);
 	}
 
-	//친구 수락
+	// 친구 수락
 	@PatchMapping("/accept/{toUserId}/{fromUserId}")
-	public ResponseEntity<String> AcceptFriendStatus(@PathVariable Long fromUserId, @PathVariable Long toUserId) {
-		friendService.AcceptFriendStatusService(fromUserId, toUserId);
-		return ResponseEntity.ok("친구 요청을 승낙 하였습니다.");
+	public ResponseEntity<String> acceptFriendStatus(@PathVariable Long fromUserId, @PathVariable Long toUserId) {
+		friendService.acceptFriendRequest(fromUserId, toUserId); // 서비스 메서드 호출
+		return ResponseEntity.ok("친구 요청을 승낙하였습니다.");
 	}
 
 	// 친구 거절
 	@PatchMapping("/decline/{toUserId}/{fromUserId}")
-	public ResponseEntity<String> DeclineFriendStatus(@PathVariable Long fromUserId, @PathVariable Long toUserId) {
-		friendService.DeclineFriendStatusService(fromUserId, toUserId);
-		return ResponseEntity.ok("친구 요청을 거절 하였습니다.");
+	public ResponseEntity<String> declineFriendStatus(@PathVariable Long fromUserId, @PathVariable Long toUserId) {
+		friendService.declineFriendRequest(fromUserId, toUserId); // 서비스 메서드 호출
+		return ResponseEntity.ok("친구 요청을 거절하였습니다.");
 	}
 
 	// 친구 삭제
