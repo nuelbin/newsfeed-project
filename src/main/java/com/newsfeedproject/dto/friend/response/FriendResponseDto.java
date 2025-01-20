@@ -1,4 +1,4 @@
-package com.newsfeedproject.dto.friend;
+package com.newsfeedproject.dto.friend.response;
 
 import com.newsfeedproject.common.entity.friend.Friend;
 import com.newsfeedproject.common.entity.friend.FriendStatus;
@@ -22,4 +22,3 @@ public class FriendResponseDto {
 
 	}
 }
-
