@@ -16,5 +16,4 @@ public class CreateUserRequestDto {
 		this.password = password;
 		this.reEnterPassword = reEnterPassword;
 	}
-
 }
