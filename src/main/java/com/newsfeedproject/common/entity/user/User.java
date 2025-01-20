@@ -14,6 +14,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import org.hibernate.annotations.Comment;
+
 @Entity
 @Table(name = "USER")
 @Getter
@@ -63,6 +65,10 @@ public class User extends BaseEntity {
 		this.userName = userName;
 		this.email = email;
 		this.password = password;
+	}
+
+	public void updateUser(String userName) {
+		this.userName = userName;
 	}
 
 }

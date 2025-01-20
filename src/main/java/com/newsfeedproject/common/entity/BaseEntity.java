@@ -56,4 +56,17 @@ public abstract class BaseEntity {
 		this.isDeleted = false;
 		this.deletedAt = LocalDateTime.now();
 	}
+
+	public void markAsDeleted1() {
+		this.isDeleted = true;
+		this.deletedAt = LocalDateTime.now();
+	}
+
+	public boolean getIsDelete() {
+		return isDeleted;
+	}
+
+	public void updateIsDelete(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
 }

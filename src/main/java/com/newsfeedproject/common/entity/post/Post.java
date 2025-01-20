@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Entity
@@ -26,11 +25,8 @@ public class Post extends BaseEntity {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@Setter
-	@Column(columnDefinition = "TINYINT")
-	private boolean isDelete = false;
-
-	public Post(String content) {
+	public Post(User user,String content) {
+		this.user = user;
 		this.content = content;
 	}
 
