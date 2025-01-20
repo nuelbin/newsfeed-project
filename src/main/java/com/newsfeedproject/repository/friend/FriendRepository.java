@@ -16,4 +16,10 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 	// 특정 User의 모든 친구 조회
 	List<Friend> findAllByFromUserIdOrToUserId(Long fromUserId, Long toUserId);
 
+	// 단건 조회: is_deleted가 false이고, updatedAt이 null이 아닌 친구 조회
+	Optional<Friend> findByFromUserIdAndToUserIdAndIsDeletedFalseAndUpdatedAtIsNotNull(Long fromUserId, Long toUserId);
+
+	// 다건 조회: is_deleted가 false이고, updatedAt이 null이 아닌 친구들 조회
+	List<Friend> findAllByFromUserIdAndIsDeletedFalseAndUpdatedAtIsNotNull(Long fromUserId);
+	
 }
