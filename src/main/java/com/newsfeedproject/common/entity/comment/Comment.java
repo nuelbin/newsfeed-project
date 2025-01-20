@@ -6,7 +6,6 @@ import java.util.List;
 import com.newsfeedproject.common.entity.BaseEntity;
 import com.newsfeedproject.common.entity.post.Post;
 import com.newsfeedproject.common.entity.user.User;
-import com.newsfeedproject.dto.comment.request.UpdateCommentRequestDto;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -55,8 +54,8 @@ public class Comment extends BaseEntity {
 		replies.add(replie); // 대댓글 추가
 	}
 
-	public void updateContent(UpdateCommentRequestDto requestDto) {
-		this.content = requestDto.getContent();
+	public void updateContent(String requestDto) {
+		this.content = getContent();
 	}
 
 	public Comment(String content, User user, Post post, Comment parent) {

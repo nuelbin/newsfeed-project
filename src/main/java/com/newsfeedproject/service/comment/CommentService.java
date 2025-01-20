@@ -11,6 +11,7 @@ import com.newsfeedproject.common.entity.post.Post;
 import com.newsfeedproject.common.entity.user.User;
 import com.newsfeedproject.common.exception.comment.CommentNotFoundException;
 import com.newsfeedproject.common.exception.comment.PostNotFoundException;
+import com.newsfeedproject.common.exception.comment.UnauthorizedAccessException;
 import com.newsfeedproject.dto.comment.request.CreateCommentRequestDto;
 import com.newsfeedproject.dto.comment.request.UpdateCommentRequestDto;
 import com.newsfeedproject.dto.comment.response.CommentDto;
@@ -39,7 +40,8 @@ public class CommentService {
 
 	// 댓글 생성
 	@Transactional
-	public CreateCommentResponseDto createComment(Long postId, CreateCommentRequestDto createRequestDto) {
+	public CreateCommentResponseDto createComment(Long postId, CreateCommentRequestDto createRequestDto,
+		Long userId) {
 
 		log.info("서비스 들어옴");
 
@@ -48,7 +50,7 @@ public class CommentService {
 			.orElseThrow(() -> new PostNotFoundException()); // 예외처리 추가
 		log.info(post.toString());
 
-		User user = userRepository.findById(createRequestDto.getUserId())
+		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
 		log.info(user.toString());
 
@@ -109,36 +111,49 @@ public class CommentService {
 
 	// 댓글 업데이트
 	@Transactional
-	public UpdateCommentResponseDto updateComment(Long commentId, UpdateCommentRequestDto updateCommentRequestDto) {
+	public UpdateCommentResponseDto updateComment(Long commentId, UpdateCommentRequestDto updateCommentRequestDto,
+		Long loginUserId) {
 
+		// 댓글 조회
 		Comment comment = commentRepository.findById(commentId)
 			.orElseThrow(() -> new CommentNotFoundException());
 
-		comment.updateContent(
-			updateCommentRequestDto
-		);
+		// 댓글 작성자가 로그인한 사용자와 일치하는지 확인
+		if (!comment.getUser().getId().equals(loginUserId)) {
+			throw new UnauthorizedAccessException(); // 자신의 댓글만 수정할 수 있도록 예외처리
+		}
 
-		Comment updatedComment = commentRepository.save(comment);  // 변경된 댓글을 저장
+		// 댓글 내용 수정
+		comment.updateContent(updateCommentRequestDto.getContent());
 
+		// 수정된 댓글 저장
+		Comment updatedComment = commentRepository.save(comment);
+
+		// 수정된 댓글을 DTO로 변환하여 반환
 		return new UpdateCommentResponseDto(
 			updatedComment.getId(),
-			updatedComment.getContent());
-
+			updatedComment.getContent()
+		);
 	}
 
 	// 댓글 삭제
 	@Transactional
-	public DeleteCommentResponseDto deleteComment(Long commentId) {
+	public DeleteCommentResponseDto deleteComment(Long commentId, Long userId) {
 
+		// 댓글 조회
 		Comment comment = commentRepository.findById(commentId)
-			.orElseThrow(() -> new CommentNotFoundException()); // 예외처리 추가
+			.orElseThrow(() -> new CommentNotFoundException());
 
+		// 댓글 작성자가 로그인한 사용자와 일치하는지 확인
+		if (!comment.getUser().getId().equals(userId)) {
+			throw new UnauthorizedAccessException();
+		}
+
+		// 댓글 삭제
 		commentRepository.delete(comment);
 
-		return new DeleteCommentResponseDto(
-			"댓글이 삭제 되었습니다."
-		);
-
+		// 삭제된 댓글에 대한 응답 반환
+		return new DeleteCommentResponseDto("댓글이 삭제되었습니다.");
 	}
 
 	// 대댓글 다건 조회
