@@ -12,5 +12,5 @@ public class FindAllCommentResponseDto {
 	private Long id;
 	private String userName;
 	private String content;
-	private List<CreateCommentResponseDto> replies = new ArrayList<>();  // 대댓글(답글) 목록 추가
+	private List<CommentDto> replies = new ArrayList<>();  // 대댓글(답글) 목록 추가
 }

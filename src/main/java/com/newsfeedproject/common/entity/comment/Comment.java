@@ -6,6 +6,7 @@ import java.util.List;
 import com.newsfeedproject.common.entity.BaseEntity;
 import com.newsfeedproject.common.entity.post.Post;
 import com.newsfeedproject.common.entity.user.User;
+import com.newsfeedproject.dto.comment.request.UpdateCommentRequestDto;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -50,6 +51,14 @@ public class Comment extends BaseEntity {
 	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
 	private List<Comment> replies = new ArrayList<>();  // 대댓글 목록
 
+	public void addReplie(Comment replie) {
+		replies.add(replie); // 대댓글 추가
+	}
+
+	public void updateContent(UpdateCommentRequestDto requestDto) {
+		this.content = requestDto.getContent();
+	}
+
 	public Comment(String content, User user, Post post, Comment parent) {
 		this.content = content;
 		this.user = user;
@@ -62,4 +71,5 @@ public class Comment extends BaseEntity {
 		this.user = user;
 		this.post = post;
 	}
+
 }

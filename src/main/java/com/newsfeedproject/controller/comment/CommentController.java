@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.newsfeedproject.dto.comment.request.CreateCommentRequestDto;
 import com.newsfeedproject.dto.comment.request.UpdateCommentRequestDto;
 import com.newsfeedproject.dto.comment.response.CreateCommentResponseDto;
+import com.newsfeedproject.dto.comment.response.DeleteCommentResponseDto;
+import com.newsfeedproject.dto.comment.response.FindAllCommentResponseDto;
+import com.newsfeedproject.dto.comment.response.FindAllReplyCommentResponseDto;
 import com.newsfeedproject.dto.comment.response.UpdateCommentResponseDto;
 import com.newsfeedproject.service.comment.CommentService;
 
@@ -42,19 +45,18 @@ public class CommentController {
 	}
 
 	@GetMapping // 댓글 다건 조회
-	public ResponseEntity<List<CreateCommentResponseDto>> findParentComments(
+	public ResponseEntity<List<FindAllCommentResponseDto>> findParentComments(
 		@PathVariable("post_id") Long postId
 	) {
-		List<CreateCommentResponseDto> createCommentResponseDtoList = commentService.findAllComments(postId);
-		return new ResponseEntity<>(createCommentResponseDtoList, HttpStatus.OK);
+		List<FindAllCommentResponseDto> findAllCommentResponseDtoList = commentService.findParentComments(postId);
+		return new ResponseEntity<>(findAllCommentResponseDtoList, HttpStatus.OK);
 	}
 
 	@GetMapping("/{comment_id}/replies")  // 대댓글만 다건 조회
-	public ResponseEntity<List<CreateCommentResponseDto>> findChildrenComments(
+	public ResponseEntity<List<FindAllReplyCommentResponseDto>> findChildrenComments(
 		@PathVariable("comment_id") Long commentId // 여기서의 commentId = parentId
 	) {
-		// 부모 댓글의 대댓글(답글) 조회
-		List<CreateCommentResponseDto> replies = commentService.findChildrenComments(commentId);
+		List<FindAllReplyCommentResponseDto> replies = commentService.findChildrenComments(commentId);
 		return new ResponseEntity<>(replies, HttpStatus.OK);
 	}
 
@@ -68,12 +70,11 @@ public class CommentController {
 	}
 
 	@DeleteMapping("/{comment_id}") // 댓글 삭제
-	public ResponseEntity<Void> deleteComment( // void라고 쓰는게 맞나? DeletRe~Dto를 만들어서..메세지 출력할 수 있도록
+	public ResponseEntity<DeleteCommentResponseDto> deleteComment(
 		@PathVariable("comment_id") Long commentId
 	) { //+ session.getAttribute~~ 인증 시 추가
-		commentService.deleteComment(commentId);
-
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		DeleteCommentResponseDto deleteComment = commentService.deleteComment(commentId);
+		return new ResponseEntity<>(deleteComment, HttpStatus.OK);
 	}
 
 }

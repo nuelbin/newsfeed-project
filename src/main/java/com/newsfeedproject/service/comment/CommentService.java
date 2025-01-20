@@ -13,7 +13,11 @@ import com.newsfeedproject.common.exception.comment.CommentNotFoundException;
 import com.newsfeedproject.common.exception.comment.PostNotFoundException;
 import com.newsfeedproject.dto.comment.request.CreateCommentRequestDto;
 import com.newsfeedproject.dto.comment.request.UpdateCommentRequestDto;
+import com.newsfeedproject.dto.comment.response.CommentDto;
 import com.newsfeedproject.dto.comment.response.CreateCommentResponseDto;
+import com.newsfeedproject.dto.comment.response.DeleteCommentResponseDto;
+import com.newsfeedproject.dto.comment.response.FindAllCommentResponseDto;
+import com.newsfeedproject.dto.comment.response.FindAllReplyCommentResponseDto;
 import com.newsfeedproject.dto.comment.response.UpdateCommentResponseDto;
 import com.newsfeedproject.repository.comment.CommentRepository;
 import com.newsfeedproject.repository.post.PostRepository;
@@ -33,7 +37,7 @@ public class CommentService {
 	private final UserRepository userRepository;
 	private final PostRepository postRepository;
 
-	// 댓글 생성 메서드
+	// 댓글 생성
 	@Transactional
 	public CreateCommentResponseDto createComment(Long postId, CreateCommentRequestDto createRequestDto) {
 
@@ -50,14 +54,14 @@ public class CommentService {
 
 		Long parentId = createRequestDto.getParentCommentId();
 
-		// 부모 아이디의 존재여부 검증 로직 (대댓글안 경우)
+		// 부모 아이디의 존재여부 검증 로직 (대댓글인 경우)
 		if (parentId != null) {
 			log.info("부모아이디 존재함");
 			boolean existsById = commentRepository.existsById(parentId);
 			if (!existsById) { // 부모댓글
 				throw new CommentNotFoundException(); // 같은 코드 if(existById == false) -> 예외처리 추가
 			} else {
-				// 해당하는 부모 아이디를 조회 -> 오류가 생길 수 있음, 수정 필요
+				// 해당하는 부모 아이디를 조회
 				Comment parentComment = commentRepository.findById(createRequestDto.getParentCommentId())
 					.orElseThrow(() -> new CommentNotFoundException());
 				log.info(parentComment.toString());
@@ -69,6 +73,9 @@ public class CommentService {
 					post,
 					parentComment
 				);
+
+				// 댓글 목록 추가
+				parentComment.addReplie(comment);
 
 				// 데이터베이스에 댓글 저장
 				Comment savedComment = commentRepository.save(comment);
@@ -100,28 +107,43 @@ public class CommentService {
 			savedComment.getCreatedAt());
 	}
 
-	public List<CreateCommentResponseDto> findAllComments(Long PostId) {
-		return commentRepository.findAll().stream()
-			.map(comment -> new CreateCommentResponseDto(comment.getId(),
-				comment.getUser().getUserName(),
-				comment.getContent(), comment.getCreatedAt()))
-			.collect(Collectors.toList());
-	}
-
+	// 댓글 업데이트
+	@Transactional
 	public UpdateCommentResponseDto updateComment(Long commentId, UpdateCommentRequestDto updateCommentRequestDto) {
-		return new UpdateCommentResponseDto(commentRepository.findById(commentId));
+
+		Comment comment = commentRepository.findById(commentId)
+			.orElseThrow(() -> new CommentNotFoundException());
+
+		comment.updateContent(
+			updateCommentRequestDto
+		);
+
+		Comment updatedComment = commentRepository.save(comment);  // 변경된 댓글을 저장
+
+		return new UpdateCommentResponseDto(
+			updatedComment.getId(),
+			updatedComment.getContent());
+
 	}
 
-	public void deleteComment(Long commentId) {
+	// 댓글 삭제
+	@Transactional
+	public DeleteCommentResponseDto deleteComment(Long commentId) {
 
 		Comment comment = commentRepository.findById(commentId)
 			.orElseThrow(() -> new CommentNotFoundException()); // 예외처리 추가
 
 		commentRepository.delete(comment);
 
+		return new DeleteCommentResponseDto(
+			"댓글이 삭제 되었습니다."
+		);
+
 	}
 
-	public List<CreateCommentResponseDto> findChildrenComments(Long parentCommentId) {
+	// 대댓글 다건 조회
+	@Transactional
+	public List<FindAllReplyCommentResponseDto> findChildrenComments(Long parentCommentId) {
 		// 부모 댓글을 먼저 조회
 		Comment parentComment = commentRepository.findById(parentCommentId)
 			.orElseThrow(() -> new CommentNotFoundException());
@@ -129,16 +151,36 @@ public class CommentService {
 		// 부모 댓글에 달린 대댓글(답글) 조회
 		List<Comment> replies = commentRepository.findByParent(parentComment.getId());
 
-		// 대댓글 엔티티를 DTO로 변환하여 반환
+		// 대댓글 엔티티를 FindAllReplyCommentResponseDto로 변환하여 반환
 		return replies.stream()
-			.map(reply -> new CreateCommentResponseDto(
+			.map(reply -> new FindAllReplyCommentResponseDto(
 				reply.getId(),
+				parentComment.getId(),
 				reply.getContent(),
+				CommentDto.convertDto(reply.getReplies()), // 댓글에 달린 대댓글 구현
 				reply.getCreatedAt()
 			))
 			.collect(Collectors.toList());
 	}
 
-}
+	// 댓글 다건 조회
+	@Transactional
+	public List<FindAllCommentResponseDto> findParentComments(Long postId) {
 
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new PostNotFoundException());
+
+		List<Comment> parentComments = commentRepository.findByParentId(0L, post);// 부모 댓긅x 그냥 댓글 조회
+		// post 1개에 대한 댓글 볼 수 있음
+
+		return parentComments.stream()
+			.map(comment -> new FindAllCommentResponseDto(
+				comment.getId(),
+				comment.getUser().getUserName(),
+				comment.getContent(),
+				CommentDto.convertDto(comment.getReplies()) // 댓글에 달린 대댓글 구현
+			))
+			.collect(Collectors.toList());
+	}
+}
 
