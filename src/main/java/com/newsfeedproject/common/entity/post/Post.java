@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,14 +29,13 @@ public class Post extends BaseEntity {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@Setter
-	@Column(columnDefinition = "TINYINT")
-	private boolean isDelete = false;
-
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<PostCategory> postCategoryList = new ArrayList<>();
 
 	public Post(String content) {
+    
+	public Post(User user,String content) {
+		this.user = user;
 		this.content = content;
 	}
 

@@ -6,14 +6,9 @@ import lombok.Getter;
 
 @Getter
 public class FindPostResponseDto {
-
 	private String content;
 
 	public FindPostResponseDto(Post post) {
 		this.content = post.getContent();
-	}
-
-	public static FindPostResponseDto getPostDetails(Post post) {
-		return new FindPostResponseDto(post);
 	}
 }

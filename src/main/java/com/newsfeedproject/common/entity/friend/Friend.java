@@ -55,8 +55,8 @@ public class Friend extends BaseEntity {
 
 	// 친구 삭제 메서드
 	public void deleteFriend() {
-		if (!this.isDeleted) {
-			this.markAsDeleted(); // BaseEntity의 메서드 호출
+		if (!this.isDeleted()) {
+			this.markAsDeleted1(); // BaseEntity의 메서드 호출
 		} else {
 			throw new IllegalStateException("이미 삭제된 친구 관계입니다.");
 		}

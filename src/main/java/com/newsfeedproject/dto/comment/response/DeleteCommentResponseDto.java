@@ -3,11 +3,9 @@ package com.newsfeedproject.dto.comment.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Getter
 @AllArgsConstructor
-public class UpdateCommentResponseDto {
-
-	private Long id;
-	private String content;
-
+@Getter
+public class DeleteCommentResponseDto {
+	private String message;
 }
+
