@@ -37,7 +37,7 @@ public class CommentController {
 	// 생성자 -> 어노테이션 사용
 
 	// 기능
-	@PostMapping("/{post_id}/comments")
+	@PostMapping
 	public ResponseEntity<CreateCommentResponseDto> createComment(
 		@PathVariable("post_id") Long postId,
 		@RequestBody CreateCommentRequestDto createRequestDto,
