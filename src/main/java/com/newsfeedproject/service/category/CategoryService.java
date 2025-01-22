@@ -101,6 +101,18 @@ public class CategoryService {
         return new CategoryResponseDto(category.getCategoryName());
     }
 
+    // 카테고리 삭제
+    @Transactional
+    public CategoryResponseDto deleteCategory(Long categoryId) {
+        // 카테고리 조회 -> 없으면 예외 발생
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("카테고리가 없습니다."));
+
+        categoryRepository.delete(category);
+
+        return new CategoryResponseDto("카테고리가 삭제되었습니다.");
+    }
+
 
 
 }
