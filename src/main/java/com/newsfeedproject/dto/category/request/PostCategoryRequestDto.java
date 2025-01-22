@@ -1,15 +1,15 @@
 package com.newsfeedproject.dto.category.request;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class CategoryRequestDto {
+public class PostCategoryRequestDto {
     private String categoryName;
 
-    public CategoryRequestDto(String categoryName) {
+    public PostCategoryRequestDto(String categoryName) {
         this.categoryName = categoryName;
     }
 }
+
