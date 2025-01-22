@@ -70,7 +70,32 @@ public class CategoryService {
     }
 
 
-    // 다건 조회
+    // 카테고리 다건 조회(전체)
+    public List<PostCategoryResponseDto> findAllCategory() {
+        // 모든 카테고리를 조회
+        List<Category> findAllCategory = categoryRepository.findAll();
+        List<PostCategoryResponseDto> postCategoryResponseList = new ArrayList<>();
 
-    // 단건 조회
+        // 카테고리 가져오기 -> 포스트
+        for (Category category : findAllCategory) {
+            List<FindPostResponseDto> findPostResponseList = new ArrayList<>();
+
+            // 카테고리에 연결된 포스트 리스트 가져오기
+            for (PostCategory postCategory : category.getPostCategoryList()) {
+                // 연결된 Post를 dto로 변환하고 리스트에 추가
+                FindPostResponseDto findPostResponseDto = new FindPostResponseDto(postCategory.getPost());
+                findPostResponseList.add(findPostResponseDto);
+            }
+
+            // 카테고리와 포스트를 전체 리스트에 추가
+            PostCategoryResponseDto postCategoryResponseDto = new PostCategoryResponseDto(category.getCategoryName(), findPostResponseList);
+            postCategoryResponseList.add(postCategoryResponseDto);
+        }
+
+        return postCategoryResponseList;
+    }
+
+
 }
+
+
