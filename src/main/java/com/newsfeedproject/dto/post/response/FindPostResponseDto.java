@@ -9,6 +9,7 @@ public class FindPostResponseDto {
 	private String content;
 
 	public FindPostResponseDto(Post post) {
+
 		this.content = post.getContent();
 	}
 }

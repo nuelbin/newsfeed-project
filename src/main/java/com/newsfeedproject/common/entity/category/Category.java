@@ -1,7 +1,5 @@
 package com.newsfeedproject.common.entity.category;
 
-import com.newsfeedproject.common.entity.post.Post;
-import com.newsfeedproject.common.entity.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
