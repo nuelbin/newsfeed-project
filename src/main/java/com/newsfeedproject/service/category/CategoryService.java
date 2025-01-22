@@ -3,14 +3,10 @@ package com.newsfeedproject.service.category;
 import com.newsfeedproject.common.entity.category.Category;
 import com.newsfeedproject.common.entity.category.PostCategory;
 import com.newsfeedproject.common.entity.post.Post;
-import com.newsfeedproject.common.entity.user.User;
-import com.newsfeedproject.common.exception.post.DeletePostException;
 import com.newsfeedproject.dto.category.request.CategoryRequestDto;
 import com.newsfeedproject.dto.category.request.PostCategoryRequestDto;
 import com.newsfeedproject.dto.category.response.CategoryResponseDto;
 import com.newsfeedproject.dto.category.response.PostCategoryResponseDto;
-import com.newsfeedproject.dto.post.request.CreatePostRequestDto;
-import com.newsfeedproject.dto.post.response.CreatePostResponseDto;
 import com.newsfeedproject.dto.post.response.FindPostResponseDto;
 import com.newsfeedproject.repository.category.CategoryRepository;
 import com.newsfeedproject.repository.category.PostCategoryRepository;
@@ -70,7 +66,43 @@ public class CategoryService {
     }
 
 
-    // 다건 조회
+    // 카테고리 다건 조회(전체)
+    public List<PostCategoryResponseDto> findAllCategory() {
+        // 모든 카테고리를 조회
+        List<Category> findAllCategory = categoryRepository.findAll();
+        List<PostCategoryResponseDto> postCategoryResponseList = new ArrayList<>();
 
-    // 단건 조회
+        // 카테고리 가져오기 -> 포스트
+        for (Category category : findAllCategory) {
+            List<FindPostResponseDto> findPostResponseList = new ArrayList<>();
+
+            // 카테고리에 연결된 포스트 리스트 가져오기
+            for (PostCategory postCategory : category.getPostCategoryList()) {
+                // 연결된 Post를 dto로 변환하고 리스트에 추가
+                FindPostResponseDto findPostResponseDto = new FindPostResponseDto(postCategory.getPost());
+                findPostResponseList.add(findPostResponseDto);
+            }
+
+            // 카테고리와 포스트를 전체 리스트에 추가
+            PostCategoryResponseDto postCategoryResponseDto = new PostCategoryResponseDto(category.getCategoryName(), findPostResponseList);
+            postCategoryResponseList.add(postCategoryResponseDto);
+        }
+
+        return postCategoryResponseList;
+    }
+
+
+    // 카테고리 단건 조회
+    public CategoryResponseDto findCategoryById(Long categoryId) {
+        // 카테고리를 조회 -> 없으면 예외 발생
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("카테고리가 없습니다."));
+
+        return new CategoryResponseDto(category.getCategoryName());
+    }
+
+
+
 }
+
+
