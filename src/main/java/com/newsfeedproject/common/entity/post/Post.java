@@ -31,8 +31,6 @@ public class Post extends BaseEntity {
 
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<PostCategory> postCategoryList = new ArrayList<>();
-
-	public Post(String content) {
     
 	public Post(User user,String content) {
 		this.user = user;
