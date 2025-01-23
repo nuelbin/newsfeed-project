@@ -10,10 +10,10 @@ import java.util.List;
 @NoArgsConstructor
 public class PostCategoryResponseDto {
     private String categoryName;
-    private List<FindPostResponseDto> posts;
+    private List<FindPostResponseDto> post;
 
-    public PostCategoryResponseDto(String categoryName, List<FindPostResponseDto> posts) {
+    public PostCategoryResponseDto(String categoryName, List<FindPostResponseDto> post) {
         this.categoryName = categoryName;
-        this.posts = posts;
+        this.post = post;
     }
 }

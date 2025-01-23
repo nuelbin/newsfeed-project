@@ -29,7 +29,7 @@ public class CategoryController {
     @PostMapping("/posts/{postId}/link")
     public ResponseEntity<PostCategoryResponseDto> PostToCategoryAPI(
             @PathVariable Long postId, @RequestBody PostCategoryRequestDto postCategoryRequestDto) {
-        PostCategoryResponseDto postCategoryResponseDto = categoryService.PostToCategory(postId, postCategoryRequestDto);
+        PostCategoryResponseDto postCategoryResponseDto = categoryService.postToCategory(postId, postCategoryRequestDto);
         return ResponseEntity.ok(postCategoryResponseDto);
     }
 
@@ -45,6 +45,13 @@ public class CategoryController {
     public ResponseEntity<CategoryResponseDto> findCategoryByIdApI(@PathVariable Long categoryId) {
         CategoryResponseDto categoryResponseDto = categoryService.findCategoryById(categoryId);
         return ResponseEntity.ok(categoryResponseDto);
+    }
+
+    // 카테고리 삭제
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<CategoryResponseDto> deleteCategoryAPI(@PathVariable Long categoryId) {
+        CategoryResponseDto response = categoryService.deleteCategory(categoryId);
+        return ResponseEntity.ok(response);
     }
 
 }
