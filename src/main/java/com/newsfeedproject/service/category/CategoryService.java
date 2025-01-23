@@ -5,7 +5,9 @@ import com.newsfeedproject.common.entity.category.PostCategory;
 import com.newsfeedproject.common.entity.post.Post;
 import com.newsfeedproject.dto.category.request.CategoryRequestDto;
 import com.newsfeedproject.dto.category.request.PostCategoryRequestDto;
-import com.newsfeedproject.dto.category.response.CategoryResponseDto;
+import com.newsfeedproject.dto.category.response.CreateCategoryResponseDto;
+import com.newsfeedproject.dto.category.response.DeleteCategoryResponseDto;
+import com.newsfeedproject.dto.category.response.FindCategoryResponseDto;
 import com.newsfeedproject.dto.category.response.PostCategoryResponseDto;
 import com.newsfeedproject.dto.post.response.FindPostResponseDto;
 import com.newsfeedproject.repository.category.CategoryRepository;
@@ -28,13 +30,13 @@ public class CategoryService {
 
     // 카테고리 생성
     @Transactional
-    public CategoryResponseDto createCategory(CategoryRequestDto categoryRequestDto) {
+    public CreateCategoryResponseDto createCategory(CategoryRequestDto categoryRequestDto) {
 
         // 카테고리 엔티티 생성 후 데이터베이스에 저장
         Category category = new Category(categoryRequestDto.getCategoryName());
         Category saveCategory = categoryRepository.save(category);
 
-        return new CategoryResponseDto("카테고리가 생성되었습니다.", category.getCategoryName());
+        return new CreateCategoryResponseDto("카테고리가 생성되었습니다.", category.getCategoryName());
     }
 
 
@@ -100,27 +102,40 @@ public class CategoryService {
 
 
     // 카테고리 단건 조회
-    public CategoryResponseDto findCategoryById(Long categoryId) {
+    public FindCategoryResponseDto findCategoryById(Long categoryId) {
         // 카테고리를 조회 -> 없으면 예외 발생
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("카테고리가 없습니다."));
 
-        return new CategoryResponseDto(category.getCategoryName());
+        return new FindCategoryResponseDto(category.getCategoryName());
     }
 
     // 카테고리 삭제
     @Transactional
-    public CategoryResponseDto deleteCategory(Long categoryId) {
+    public DeleteCategoryResponseDto deleteCategory(Long categoryId) {
         // 카테고리 조회 -> 없으면 예외 발생
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("카테고리가 없습니다."));
 
         categoryRepository.delete(category);
 
-        return new CategoryResponseDto("카테고리가 삭제되었습니다.");
+        return new DeleteCategoryResponseDto("카테고리가 삭제되었습니다.");
     }
 
 
+//    // 포스트에 연결된 카테고리 변경
+//    @Transactional
+//    public CategoryResponseDto updatePostCategory(Long postId, PostCategoryRequestDto requestDto) {
+//        // 포스트 조회 -> 없으면 예외 발생
+//        Post post = postRepository.findById(postId)
+//                .orElseThrow(() -> new IllegalArgumentException("포스트가 없습니다."));
+//
+//        // 새로운 카테고리 조회 -> 없으면 예외 발생
+//        Category newCategory = categoryRepository.findByCategoryName(requestDto.getCategoryName())
+//                .orElseThrow(() -> new IllegalArgumentException("카테고리가 없습니다."));
+//
+//
+//    }
 
 
 

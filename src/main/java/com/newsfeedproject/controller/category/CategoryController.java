@@ -2,7 +2,7 @@ package com.newsfeedproject.controller.category;
 
 import com.newsfeedproject.dto.category.request.CategoryRequestDto;
 import com.newsfeedproject.dto.category.request.PostCategoryRequestDto;
-import com.newsfeedproject.dto.category.response.CategoryResponseDto;
+import com.newsfeedproject.dto.category.response.CreateCategoryResponseDto;
 import com.newsfeedproject.dto.category.response.PostCategoryResponseDto;
 import com.newsfeedproject.service.category.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +20,8 @@ public class CategoryController {
 
     // 카테고리 생성
     @PostMapping
-    public ResponseEntity<CategoryResponseDto> createCategoryAPI(@RequestBody CategoryRequestDto categoryRequestDto) {
-        CategoryResponseDto categoryResponseDto = categoryService.createCategory(categoryRequestDto);
+    public ResponseEntity<CreateCategoryResponseDto> createCategoryAPI(@RequestBody CategoryRequestDto categoryRequestDto) {
+        CreateCategoryResponseDto categoryResponseDto = categoryService.createCategory(categoryRequestDto);
         return ResponseEntity.ok(categoryResponseDto);
     }
 
@@ -42,15 +42,15 @@ public class CategoryController {
 
     // 카테고리 단건 조회
     @GetMapping("/{categoryId}")
-    public ResponseEntity<CategoryResponseDto> findCategoryByIdApI(@PathVariable Long categoryId) {
-        CategoryResponseDto categoryResponseDto = categoryService.findCategoryById(categoryId);
+    public ResponseEntity<CreateCategoryResponseDto> findCategoryByIdApI(@PathVariable Long categoryId) {
+        CreateCategoryResponseDto categoryResponseDto = categoryService.findCategoryById(categoryId);
         return ResponseEntity.ok(categoryResponseDto);
     }
 
     // 카테고리 삭제
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<CategoryResponseDto> deleteCategoryAPI(@PathVariable Long categoryId) {
-        CategoryResponseDto response = categoryService.deleteCategory(categoryId);
+    public ResponseEntity<CreateCategoryResponseDto> deleteCategoryAPI(@PathVariable Long categoryId) {
+        CreateCategoryResponseDto response = categoryService.deleteCategory(categoryId);
         return ResponseEntity.ok(response);
     }
 
