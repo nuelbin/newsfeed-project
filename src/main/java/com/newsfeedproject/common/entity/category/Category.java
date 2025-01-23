@@ -17,11 +17,11 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String categoryName;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostCategory> postCategoryList = new ArrayList<>();
+//    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<PostCategory> postCategoryList = new ArrayList<>();
 
     public Category(String categoryName) {
         this.categoryName = categoryName;

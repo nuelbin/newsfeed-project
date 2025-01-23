@@ -29,7 +29,7 @@ public class CategoryController {
     @PostMapping("/posts/{postId}/link")
     public ResponseEntity<PostCategoryResponseDto> PostToCategoryAPI(
             @PathVariable Long postId, @RequestBody PostCategoryRequestDto postCategoryRequestDto) {
-        PostCategoryResponseDto postCategoryResponseDto = categoryService.PostToCategory(postId, postCategoryRequestDto);
+        PostCategoryResponseDto postCategoryResponseDto = categoryService.postToCategory(postId, postCategoryRequestDto);
         return ResponseEntity.ok(postCategoryResponseDto);
     }
 
