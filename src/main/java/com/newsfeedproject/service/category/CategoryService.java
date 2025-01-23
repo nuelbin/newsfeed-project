@@ -123,22 +123,6 @@ public class CategoryService {
     }
 
 
-//    // 포스트에 연결된 카테고리 변경
-//    @Transactional
-//    public CategoryResponseDto updatePostCategory(Long postId, PostCategoryRequestDto requestDto) {
-//        // 포스트 조회 -> 없으면 예외 발생
-//        Post post = postRepository.findById(postId)
-//                .orElseThrow(() -> new IllegalArgumentException("포스트가 없습니다."));
-//
-//        // 새로운 카테고리 조회 -> 없으면 예외 발생
-//        Category newCategory = categoryRepository.findByCategoryName(requestDto.getCategoryName())
-//                .orElseThrow(() -> new IllegalArgumentException("카테고리가 없습니다."));
-//
-//
-//    }
-
-
-
 }
 
 
