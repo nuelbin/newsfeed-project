@@ -22,6 +22,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -121,7 +122,6 @@ public class CategoryService {
 
         return new DeleteCategoryResponseDto("카테고리가 삭제되었습니다.");
     }
-
 
 }
 
