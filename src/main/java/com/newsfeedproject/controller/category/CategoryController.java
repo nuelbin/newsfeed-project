@@ -2,7 +2,9 @@ package com.newsfeedproject.controller.category;
 
 import com.newsfeedproject.dto.category.request.CategoryRequestDto;
 import com.newsfeedproject.dto.category.request.PostCategoryRequestDto;
-import com.newsfeedproject.dto.category.response.CategoryResponseDto;
+import com.newsfeedproject.dto.category.response.CreateCategoryResponseDto;
+import com.newsfeedproject.dto.category.response.DeleteCategoryResponseDto;
+import com.newsfeedproject.dto.category.response.FindCategoryResponseDto;
 import com.newsfeedproject.dto.category.response.PostCategoryResponseDto;
 import com.newsfeedproject.service.category.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +22,9 @@ public class CategoryController {
 
     // 카테고리 생성
     @PostMapping
-    public ResponseEntity<CategoryResponseDto> createCategoryAPI(@RequestBody CategoryRequestDto categoryRequestDto) {
-        CategoryResponseDto categoryResponseDto = categoryService.createCategory(categoryRequestDto);
-        return ResponseEntity.ok(categoryResponseDto);
+    public ResponseEntity<CreateCategoryResponseDto> createCategoryAPI(@RequestBody CategoryRequestDto categoryRequestDto) {
+        CreateCategoryResponseDto createCategoryResponseDto = categoryService.createCategory(categoryRequestDto);
+        return ResponseEntity.ok(createCategoryResponseDto);
     }
 
     // 포스트를 카테고리에 연결
@@ -42,16 +44,16 @@ public class CategoryController {
 
     // 카테고리 단건 조회
     @GetMapping("/{categoryId}")
-    public ResponseEntity<CategoryResponseDto> findCategoryByIdApI(@PathVariable Long categoryId) {
-        CategoryResponseDto categoryResponseDto = categoryService.findCategoryById(categoryId);
-        return ResponseEntity.ok(categoryResponseDto);
+    public ResponseEntity<FindCategoryResponseDto> findCategoryByIdApI(@PathVariable Long categoryId) {
+        FindCategoryResponseDto findCategoryResponseDto = categoryService.findCategoryById(categoryId);
+        return ResponseEntity.ok(findCategoryResponseDto);
     }
 
     // 카테고리 삭제
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<CategoryResponseDto> deleteCategoryAPI(@PathVariable Long categoryId) {
-        CategoryResponseDto response = categoryService.deleteCategory(categoryId);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<DeleteCategoryResponseDto> deleteCategoryAPI(@PathVariable Long categoryId) {
+        DeleteCategoryResponseDto deleteCategoryResponseDto = categoryService.deleteCategory(categoryId);
+        return ResponseEntity.ok(deleteCategoryResponseDto);
     }
 
 }
