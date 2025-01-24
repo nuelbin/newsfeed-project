@@ -5,10 +5,8 @@ import com.newsfeedproject.common.entity.category.PostCategory;
 import com.newsfeedproject.common.entity.post.Post;
 import com.newsfeedproject.dto.category.request.CategoryRequestDto;
 import com.newsfeedproject.dto.category.request.PostCategoryRequestDto;
-import com.newsfeedproject.dto.category.response.CreateCategoryResponseDto;
-import com.newsfeedproject.dto.category.response.DeleteCategoryResponseDto;
-import com.newsfeedproject.dto.category.response.FindCategoryResponseDto;
-import com.newsfeedproject.dto.category.response.PostCategoryResponseDto;
+import com.newsfeedproject.dto.category.request.UpdateCategoryRequestDto;
+import com.newsfeedproject.dto.category.response.*;
 import com.newsfeedproject.dto.post.response.FindPostResponseDto;
 import com.newsfeedproject.repository.category.CategoryRepository;
 import com.newsfeedproject.repository.category.PostCategoryRepository;
@@ -43,13 +41,13 @@ public class CategoryService {
 
     // 포스트를 카테고리에 연결
     @Transactional
-    public PostCategoryResponseDto postToCategory(Long postId, PostCategoryRequestDto postCategoryRequestDto) {
+    public PostCategoryResponseDto postToCategory(Long postId, Long categoryId) {
         // 포스트를 조회 -> 없으면 예외 발생
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("포스트가 없습니다."));
 
         // 카테고리를 조회 -> 없으면 예외 발생
-        Category category = categoryRepository.findByCategoryName(postCategoryRequestDto.getCategoryName())
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("카테고리가 없습니다."));
 
         // 엔티티 생성 및 저장
@@ -123,6 +121,29 @@ public class CategoryService {
         return new DeleteCategoryResponseDto("카테고리가 삭제되었습니다.");
     }
 
-}
 
+    // 카테고리 변경
+    @Transactional
+    public UpdateCategoryResponseDto updateCategory(Long postId, UpdateCategoryRequestDto requestDto) {
+        // 포스트를 조회 -> 없으면 예외 발생
+        PostCategory postCategory = postCategoryRepository.findByPostId(postId)
+                .orElseThrow(() -> new IllegalArgumentException("포스트가 없습니다."));
+
+        // 카테고리를 조회 -> 없으면 예외 발생
+        Category updatedCategory = categoryRepository.findById(requestDto.getCategoryId())
+                .orElseThrow(() -> new IllegalArgumentException("카테고리가 없습니다."));
+
+        // 카테고리 변경
+        postCategory.updateCategory(updatedCategory);
+        postCategoryRepository.save(postCategory);
+
+        return new UpdateCategoryResponseDto(
+                postId,
+                updatedCategory.getId(),
+                "카테고리가 변경되었습니다."
+        );
+    }
+
+
+}
 

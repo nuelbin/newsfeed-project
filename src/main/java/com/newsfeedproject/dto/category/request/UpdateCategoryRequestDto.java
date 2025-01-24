@@ -5,13 +5,11 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class PostCategoryRequestDto {
+public class UpdateCategoryRequestDto {
     private Long categoryId;
-    private String categoryName;
 
-    public PostCategoryRequestDto(Long categoryId, String categoryName) {
+    public UpdateCategoryRequestDto(Long categoryId) {
         this.categoryId = categoryId;
-        this.categoryName = categoryName;
     }
 }
 

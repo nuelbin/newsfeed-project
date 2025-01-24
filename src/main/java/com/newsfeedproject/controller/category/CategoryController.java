@@ -2,10 +2,8 @@ package com.newsfeedproject.controller.category;
 
 import com.newsfeedproject.dto.category.request.CategoryRequestDto;
 import com.newsfeedproject.dto.category.request.PostCategoryRequestDto;
-import com.newsfeedproject.dto.category.response.CreateCategoryResponseDto;
-import com.newsfeedproject.dto.category.response.DeleteCategoryResponseDto;
-import com.newsfeedproject.dto.category.response.FindCategoryResponseDto;
-import com.newsfeedproject.dto.category.response.PostCategoryResponseDto;
+import com.newsfeedproject.dto.category.request.UpdateCategoryRequestDto;
+import com.newsfeedproject.dto.category.response.*;
 import com.newsfeedproject.service.category.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +29,7 @@ public class CategoryController {
     @PostMapping("/posts/{postId}/link")
     public ResponseEntity<PostCategoryResponseDto> PostToCategoryAPI(
             @PathVariable Long postId, @RequestBody PostCategoryRequestDto postCategoryRequestDto) {
-        PostCategoryResponseDto postCategoryResponseDto = categoryService.postToCategory(postId, postCategoryRequestDto);
+        PostCategoryResponseDto postCategoryResponseDto = categoryService.postToCategory(postId, postCategoryRequestDto.getCategoryId());
         return ResponseEntity.ok(postCategoryResponseDto);
     }
 
@@ -55,5 +53,15 @@ public class CategoryController {
         DeleteCategoryResponseDto deleteCategoryResponseDto = categoryService.deleteCategory(categoryId);
         return ResponseEntity.ok(deleteCategoryResponseDto);
     }
+
+    // 포스트에 연결된 카테고리 변경
+    @PatchMapping("/posts/{postId}/link")
+    public ResponseEntity<UpdateCategoryResponseDto> updateCategoryAPI(
+            @PathVariable Long postId,
+            @RequestBody UpdateCategoryRequestDto updateCategoryRequestDto) {
+        UpdateCategoryResponseDto udateCategoryresponseDto = categoryService.updateCategory(postId, updateCategoryRequestDto);
+        return ResponseEntity.ok(udateCategoryresponseDto);
+    }
+
 
 }
