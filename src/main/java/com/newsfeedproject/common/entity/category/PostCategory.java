@@ -27,4 +27,8 @@ public class PostCategory {
         this.post = post;
         this.category = category;
     }
+
+    public void updateCategory(Category updatedCategory) {
+        this.category = updatedCategory;
+    }
 }
